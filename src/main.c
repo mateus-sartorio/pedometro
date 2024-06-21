@@ -24,13 +24,18 @@
 
 void button_callback(uint32_t mask) {
     if(Button_ReadReleased()) {
-        if(BUTTON1 & mask) {
-            LED_Toggle(LED1);
-        } else if(BUTTON2 & mask) {
-            LED_Toggle(LED2);
-        }
+        LED_Toggle(LED1);
+        // if(BUTTON1 & mask) {
+        //     LED_Toggle(LED1);
+        // }
+
+        // if(BUTTON2 & mask) {
+        //     LED_Toggle(LED2);
+        // }
     }
 }
+
+void SysTick_Handler(void) { Button_Processing(); }
 
 int main(void) {
     LED_Init(LED1 | LED2);
@@ -40,9 +45,17 @@ int main(void) {
 
     __enable_irq();
 
-    LED_Write(0, LED1 | LED2);
+    LED_Write(LED1 | LED2, 0);
 
     while(true) {
-        __WFI();
+        uint32_t button = Button_ReadReleased();
+
+        if(button & BUTTON1) {
+            LED_Toggle(LED1);
+        }
+
+        if(button & BUTTON2) {
+            LED_Toggle(LED2);
+        }
     }
 }
